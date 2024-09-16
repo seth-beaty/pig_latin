@@ -2,6 +2,7 @@
 
 import string
 import textwrap
+import pyperclip
 
 
 def main():
@@ -19,11 +20,13 @@ def main():
         result_text = ' '.join([get_pig_latin_word(w) for w in input_list])
         print(textwrap.fill(result_text))
 
+        pyperclip.copy(result_text)
+        print("\n\n****************************************************************************")
+        print("Result copied to clipboard.")
+
         try_again = input("\n\nTry again? (Press Enter else n to quit)\n ")
         if try_again.lower() == "n":
             break
-
-    input("\nPress Enter to exit.")
 
 
 def starts_with_vowel(word):
@@ -45,34 +48,33 @@ def get_pig_latin_word(word):
     if last_char_in_word in string.punctuation:
         word_ends_with_punctuation = True
 
-    # If the word starts with a vowel but has punctuation, add 'way'
-    # and the punctuation to the end of the word.
-    #
-    # Else if the word starts with a vowel but doesn't have punctuation,
-    # simply add 'way' to the end of it.
-    #
-    # If the last character in a word is punctuation and the word starts with a
-    # consonant, add the punctuation after adding the Pig latin to the
-    # end of the word (e.g. 'along,' becomes 'longaway,') with the comma
-    # at the end as expected.
-    #
-    # Else move the first letter of the word to the end and
-    # add 'ay' to the end.
     if word[0].isupper():
         first_char_upper = True
-    word_result = word[:-1].lower() + f"way{last_char_in_word}" \
-        if word_ends_with_punctuation \
-        else word.lower() + "way" if starts_with_vowel(word) \
-        else word[1:-1].lower() + word[0].lower() + f"ay{last_char_in_word}" \
-        if word_ends_with_punctuation \
-        else word[1:].lower() + word[0].lower() + "ay"
+
+    pig_latin_word = ""
+
+    if word_ends_with_punctuation:
+        # If the word starts with a vowel and has punctuation, add 'way'
+        # and the punctuation to the end of the word.
+        if starts_with_vowel(word):
+            pig_latin_word = word[:-1].lower() + f"way{last_char_in_word}"
+        else:
+            # Else add the first letter to the end and append 'ay' if it is a consonant
+            pig_latin_word = word[1:-1].lower() + word[0].lower() + f"ay{last_char_in_word}"
+
+    else:
+        if starts_with_vowel(word):
+            pig_latin_word = word.lower() + f"way"
+        else:
+            # Else add the first letter to the end and append 'ay' if it is a consonant
+            pig_latin_word = word[1:].lower() + word[0].lower() + f"ay"
 
     if first_char_upper:
-        word_result = list(word_result)
-        word_result[0] = word_result[0].upper()
-        word_result = "".join(word_result)
+        pig_latin_word = list(pig_latin_word)
+        pig_latin_word[0] = pig_latin_word[0].upper()
+        pig_latin_word = "".join(pig_latin_word)
 
-    return word_result
+    return pig_latin_word
 
 
 if __name__ == "__main__":
